@@ -94,20 +94,25 @@ function frontendpageoptions_civicrm_alterEntitySettingsFolders(&$folders) {
  */
 function frontendpageoptions_civicrm_postProcess($formName, &$form) {
   if($formName == 'CRM_Contribute_Form_Contribution_Confirm') {
-    if(($redirectTo = _frontendpageoptions_getredirect($form->get('id'), 'contribution_page')) != FALSE) {
-      CRM_Utils_System::redirect($redirectTo);
+    $settings = _frontendpageoptions_getsettings($form->get('id'), 'contribution_page');
+    if(!empty($settings['contribution_page_cidzero_relationship_type_id'])) {
+      //@todo - fix civi so it sets the selected contact on the form rather than retrieving from contribution
+      $registeredContactID = civicrm_api3('contribution', 'getvalue', array('id' => $form->_contributionID, 'return' => 'contact_id'));
+      $loggedinUserContactID = _frontendpageoptions_getloggedincontactid();
+      if($loggedinUserContactID && _frontendpageoptions_is_contact_new($registeredContactID)) {
+        _frontendpageoptions_create_relationship($registeredContactID, $loggedinUserContactID, $settings['contribution_page_cidzero_relationship_type_id']);
+      }
+    }
+    if(!empty($settings['contribution_page_thankyou_redirect'])) {
+      CRM_Utils_System::redirect($settings['contribution_page_thankyou_redirect']);
     }
   }
   if($formName == 'CRM_Event_Form_Registration_Confirm') {
-    dpm($formName);dpm($form);
     $settings = _frontendpageoptions_getsettings($form->get('id'), 'event');
-    dpm($settings);
     if(!empty($settings['event_cidzero_relationship_type_id'])) {
       if(isset($form->_values['participant']['contact_id'])) {
         $registeredContactID = $form->_values['participant']['contact_id'];
         $loggedinUserContactID = _frontendpageoptions_getloggedincontactid();
-        dpm($loggedinUserContactID);
-        dpm($registeredContactID);
         if($loggedinUserContactID && _frontendpageoptions_is_contact_new($registeredContactID)) {
           _frontendpageoptions_create_relationship($registeredContactID, $loggedinUserContactID, $settings['event_cidzero_relationship_type_id']);
         }
@@ -139,12 +144,12 @@ function _frontendpageoptions_getredirect($entity_id, $entity) {
  * @return string
  */
 function _frontendpageoptions_getsettings($entity_id, $entity) {
-  $entity_settings = civicrm_api3('entity_setting', 'get', array(
+  $entity_settings = civicrm_api3('entity_setting', 'getsingle', array(
     'key' => 'nz.co.fuzion.frontendpageoptions',
     'entity_id' => $entity_id,
     'entity_type' => $entity)
   );
-  return $entity_settings['values'];
+  return $entity_settings;
 }
 
 /**
@@ -184,13 +189,12 @@ function _frontendpageoptions_create_relationship($registeredContactID, $loggedi
     'contact_id_' . $relationshipType[1] => $registeredContactID,
     'contact_id_' . $relationshipType[2] => $loggedinUserContactID,
     'start_date' => 'now',
+    'description' => 'relationship from form submission',
   );
-  dpm($relationshipType);
   try {
-    dpm($params);
     civicrm_api3('relationship', 'create', $params);
   }
   catch (Exception $e) {
-    dpm($e->getMessage());
+    //take no action as this is a front end form
   }
 }
