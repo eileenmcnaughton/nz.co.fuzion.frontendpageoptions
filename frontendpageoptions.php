@@ -144,12 +144,17 @@ function _frontendpageoptions_getredirect($entity_id, $entity) {
  * @return string
  */
 function _frontendpageoptions_getsettings($entity_id, $entity) {
+  try {
   $entity_settings = civicrm_api3('entity_setting', 'getsingle', array(
     'key' => 'nz.co.fuzion.frontendpageoptions',
     'entity_id' => $entity_id,
     'entity_type' => $entity)
   );
   return $entity_settings;
+  }
+  catch(Exception $e) {
+    return array();
+  }
 }
 
 /**
