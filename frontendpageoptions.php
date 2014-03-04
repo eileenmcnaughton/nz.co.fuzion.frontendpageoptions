@@ -94,33 +94,63 @@ function frontendpageoptions_civicrm_alterEntitySettingsFolders(&$folders) {
  */
 function frontendpageoptions_civicrm_postProcess($formName, &$form) {
   if($formName == 'CRM_Contribute_Form_Contribution_Confirm') {
-    $settings = _frontendpageoptions_getsettings($form->get('id'), 'contribution_page');
-    if(!empty($settings['contribution_page_cidzero_relationship_type_id'])) {
-      //@todo - fix civi so it sets the selected contact on the form rather than retrieving from contribution
-      $registeredContactID = civicrm_api3('contribution', 'getvalue', array('id' => $form->_contributionID, 'return' => 'contact_id'));
-      $loggedinUserContactID = _frontendpageoptions_getloggedincontactid();
-      if($loggedinUserContactID && _frontendpageoptions_is_contact_new($registeredContactID)) {
-        _frontendpageoptions_create_relationship($registeredContactID, $loggedinUserContactID, $settings['contribution_page_cidzero_relationship_type_id']);
-      }
-    }
-    if(!empty($settings['contribution_page_thankyou_redirect'])) {
-      CRM_Utils_System::redirect($settings['contribution_page_thankyou_redirect']);
-    }
+    _frontendpageoptions_processContributionForm($form);
   }
   if($formName == 'CRM_Event_Form_Registration_Confirm') {
-    $settings = _frontendpageoptions_getsettings($form->get('id'), 'event');
-    if(!empty($settings['event_cidzero_relationship_type_id'])) {
-      if(isset($form->_values['participant']['contact_id'])) {
-        $registeredContactID = $form->_values['participant']['contact_id'];
-        $loggedinUserContactID = _frontendpageoptions_getloggedincontactid();
-        if($loggedinUserContactID && _frontendpageoptions_is_contact_new($registeredContactID)) {
-          _frontendpageoptions_create_relationship($registeredContactID, $loggedinUserContactID, $settings['event_cidzero_relationship_type_id']);
-        }
+    _frontendpageoptions_processEventForm($form);
+  }
+}
+
+/**
+ * implements buildForm hook
+ *
+ * Since we can't rely on events to always call the confirm page we also take a look
+ * when building the thank you pae
+ * @param string $formName
+ * @param object $form
+ */
+function frontendpageoptions_civicrm_buildForm($formName, &$form) {
+  if($formName == 'CRM_Event_Form_Registration_ThankYou') {
+    _frontendpageoptions_processEventForm($form);
+  }
+}
+
+/**
+ * @param form
+ */
+
+function _frontendpageoptions_processEventForm($form) {
+  $settings = _frontendpageoptions_getsettings($form->get('id'), 'event');
+  if(!empty($settings['event_cidzero_relationship_type_id'])) {
+    if(isset($form->_values['participant']['contact_id'])) {
+      $registeredContactID = $form->_values['participant']['contact_id'];
+      $loggedinUserContactID = _frontendpageoptions_getloggedincontactid();
+      if($loggedinUserContactID && _frontendpageoptions_is_contact_new($registeredContactID)) {
+        _frontendpageoptions_create_relationship($registeredContactID, $loggedinUserContactID, $settings['event_cidzero_relationship_type_id']);
       }
     }
-    if(!empty($settings['event_thankyou_redirect'])) {
-      CRM_Utils_System::redirect($settings['event_thankyou_redirect']);
+  }
+  if(!empty($settings['event_thankyou_redirect'])) {
+    CRM_Utils_System::redirect($settings['event_thankyou_redirect']);
+  }
+}
+
+/**
+ *
+ * @param CRM_Core_Form $form
+ */
+function _frontendpageoptions_processContributionForm($form) {
+  $settings = _frontendpageoptions_getsettings($form->get('id'), 'contribution_page');
+  if(!empty($settings['contribution_page_cidzero_relationship_type_id'])) {
+    //@todo - fix civi so it sets the selected contact on the form rather than retrieving from contribution
+    $registeredContactID = civicrm_api3('contribution', 'getvalue', array('id' => $form->_contributionID, 'return' => 'contact_id'));
+    $loggedinUserContactID = _frontendpageoptions_getloggedincontactid();
+    if($loggedinUserContactID && _frontendpageoptions_is_contact_new($registeredContactID)) {
+      _frontendpageoptions_create_relationship($registeredContactID, $loggedinUserContactID, $settings['contribution_page_cidzero_relationship_type_id']);
     }
+  }
+  if(!empty($settings['contribution_page_thankyou_redirect'])) {
+    CRM_Utils_System::redirect($settings['contribution_page_thankyou_redirect']);
   }
 }
 
