@@ -17,7 +17,9 @@ return array (
   array(
     'key' => 'nz.co.fuzion.frontendpageoptions',
     'entity' => 'event',
-    'name' => 'event_cidzero_relationship_type_id',
+    //note this name field was originally event_cidzero_relationship_type_id & it was dropped on some
+    // servers until I shorted it
+    'name' => 'event_cidzero_rti',
     'type' => 'Integer',
     'html_type' => 'select',
     'options_callback' => array(

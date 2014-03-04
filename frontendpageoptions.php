@@ -121,12 +121,12 @@ function frontendpageoptions_civicrm_buildForm($formName, &$form) {
 
 function _frontendpageoptions_processEventForm($form) {
   $settings = _frontendpageoptions_getsettings($form->get('id'), 'event');
-  if(!empty($settings['event_cidzero_relationship_type_id'])) {
+  if(!empty($settings['event_cidzero_rti'])) {
     if(isset($form->_values['participant']['contact_id'])) {
       $registeredContactID = $form->_values['participant']['contact_id'];
       $loggedinUserContactID = _frontendpageoptions_getloggedincontactid();
       if($loggedinUserContactID && _frontendpageoptions_is_contact_new($registeredContactID)) {
-        _frontendpageoptions_create_relationship($registeredContactID, $loggedinUserContactID, $settings['event_cidzero_relationship_type_id']);
+        _frontendpageoptions_create_relationship($registeredContactID, $loggedinUserContactID, $settings['event_cidzero_rti']);
       }
     }
   }
