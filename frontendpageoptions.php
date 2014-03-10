@@ -120,7 +120,8 @@ function frontendpageoptions_civicrm_buildForm($formName, &$form) {
  */
 
 function _frontendpageoptions_processEventForm($form) {
-  $settings = _frontendpageoptions_getsettings($form->get('id'), 'event');
+  $id = isset($form->_eventId) ? $form->_eventId : $form->get('id');
+  $settings = _frontendpageoptions_getsettings($id, 'event');
   if(!empty($settings['event_cidzero_rti'])) {
     if(isset($form->_values['participant']['contact_id'])) {
       $registeredContactID = $form->_values['participant']['contact_id'];
@@ -174,13 +175,18 @@ function _frontendpageoptions_getredirect($entity_id, $entity) {
  * @return string
  */
 function _frontendpageoptions_getsettings($entity_id, $entity) {
+  static $settings = array();
+  $key = $entity . $entity_id;
+  if(!empty($settings[$key])) {
+    return $settings[$key];
+  }
   try {
-  $entity_settings = civicrm_api3('entity_setting', 'getsingle', array(
-    'key' => 'nz.co.fuzion.frontendpageoptions',
-    'entity_id' => $entity_id,
-    'entity_type' => $entity)
-  );
-  return $entity_settings;
+    $settings[$key] = civicrm_api3('entity_setting', 'getsingle', array(
+      'key' => 'nz.co.fuzion.frontendpageoptions',
+      'entity_id' => $entity_id,
+      'entity_type' => $entity)
+    );
+    return $settings[$key];
   }
   catch(Exception $e) {
     return array();
