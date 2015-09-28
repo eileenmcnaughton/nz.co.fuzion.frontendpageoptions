@@ -178,7 +178,7 @@ function _frontendpageoptions_processContributionForm($form) {
     }
   }
   if(!empty($settings['contribution_page_thankyou_redirect'])) {
-    CRM_Utils_System::redirect(_frontendpageoptions_get_redirect_url($settings['contribution_page_thankyou_redirect'], $form);
+    CRM_Utils_System::redirect(_frontendpageoptions_get_redirect_url($settings['contribution_page_thankyou_redirect'], $form));
   }
 }
 
