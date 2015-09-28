@@ -132,7 +132,34 @@ function _frontendpageoptions_processEventForm($form) {
     }
   }
   if(!empty($settings['event_thankyou_redirect'])) {
-    CRM_Utils_System::redirect($settings['event_thankyou_redirect']);
+    CRM_Utils_System::redirect(_frontendpageoptions_get_redirect_ur($settings['event_thankyou_redirect'], $form));
+  }
+}
+
+/**
+ * Get redirect URL with tokens resolved.
+ *
+ * Currently this function only resolves {contact.checksum} and {contact.contact_id}.
+ * See https://issues.civicrm.org/jira/browse/CRM-17290 for further discussion.
+ *
+ * @param string $url
+ * @param CRM_Core_Form $form
+ *
+ * @throws \CiviCRM_API3_Exception
+ *
+ * @return string
+ */
+function _frontendpageoptions_get_redirect_url($url, $form) {
+  if (strpos($url, '{') != FALSE) {
+    $contact = civicrm_api3('Contact', 'getsingle', array('id' => $form->getContactID(), 'return' => array('hash)')));
+    $url = str_replace('{contact.checksum}', CRM_Contact_BAO_Contact_Utils::generateChecksum(
+      $contact['id'],
+      NULL,
+      NULL,
+      $contact['hash']
+    ), $url);
+    $url = str_replace('{contact.contact_id}', $contact['id'], $url);
+    return $url;
   }
 }
 
@@ -151,7 +178,7 @@ function _frontendpageoptions_processContributionForm($form) {
     }
   }
   if(!empty($settings['contribution_page_thankyou_redirect'])) {
-    CRM_Utils_System::redirect($settings['contribution_page_thankyou_redirect']);
+    CRM_Utils_System::redirect(_frontendpageoptions_get_redirect_url($settings['contribution_page_thankyou_redirect'], $form);
   }
 }
 
