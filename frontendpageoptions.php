@@ -151,7 +151,12 @@ function _frontendpageoptions_processEventForm($form) {
  */
 function _frontendpageoptions_get_redirect_url($url, $form) {
   if (strpos($url, '{') != FALSE) {
-    $contact = civicrm_api3('Contact', 'getsingle', array('id' => $form->getContactID(), 'return' => array('hash)')));
+    $contactId = $form->getContactID();
+    // In some circumstances, $form->getContactID() returns nothing, yet there is a value in $form->_contactID?
+    if (!$contactId && $form->_contactID) {
+      $contactId = $form->_contactID;
+    }
+    $contact = civicrm_api3('Contact', 'getsingle', array('id' => $contactId, 'return' => array('hash)')));
     $url = str_replace('{contact.checksum}', CRM_Contact_BAO_Contact_Utils::generateChecksum(
       $contact['id'],
       NULL,
