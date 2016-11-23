@@ -6,7 +6,7 @@ This extension is dependent on the entity setting extension
 https://github.com/eileenmcnaughton/nz.co.fuzion.entitysetting
 
 Options added are
-1) ability to choose an alternate thank you page instead of standard CiviCRM landing page
+1) ability to choose an alternate thank you page instead of standard CiviCRM landing page (look for the "Thank You page Redirect" on a contribution page Title and Settings tab, or the Event page Online Registration tab).
 2) ability to specify a relationship that is created when someone is registered 'on behalf' (ie. with cid=0 in the url) 
 - if you want this to be permissioned you might want to use the relatedpermission extension as well
 
