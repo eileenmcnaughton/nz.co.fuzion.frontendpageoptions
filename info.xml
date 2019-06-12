@@ -8,13 +8,15 @@
     <author>Eileen</author>
     <email>eileen@fuzion.co.nz</email>
   </maintainer>
-  <releaseDate>2013-12-23</releaseDate>
-  <version>1.0</version>
-  <develStage>alpha</develStage>
+  <releaseDate>2019-06-12</releaseDate>
+  <version>1.1</version>
+  <develStage>beta</develStage>
   <compatibility>
-    <ver>4.2</ver>
-    <ver>4.4</ver>
+    <ver>5.13</ver>
   </compatibility>
+  <requires>
+    <ext>nz.co.fuzion.entitysetting</ext>
+  </requires>
   <comments>Entity Settings extension required. Currently supports an alternate thank you page
   and specification of relationships to create when form is filled in using cid=0</comments>
   <civix>

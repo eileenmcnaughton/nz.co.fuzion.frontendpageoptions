@@ -1,7 +1,7 @@
 <?php
 
-return array (
-  array(
+return [
+  [
     'key' => 'nz.co.fuzion.frontendpageoptions',
     'entity' => 'contribution_page',
     'name' => 'contribution_page_thankyou_redirect',
@@ -13,18 +13,18 @@ return array (
     'help_text' => 'Please enter the full or relative url including http for full',
     'add_to_setting_form' => TRUE,
     'form_child_of_parents_parent' => 'is_confirm_enabled',
-  ),
-  array(
+  ],
+  [
     'key' => 'nz.co.fuzion.frontendpageoptions',
     'entity' => 'contribution_page',
     'name' => 'contribution_page_cidzero_relationship_type_id',
     'type' => 'Integer',
     'html_type' => 'select',
-    'options_callback' => array(
+    'options_callback' => [
       'class' => 'CRM_Contact_BAO_Relationship',
       'method' => 'getContactRelationshipType',
-      'arguments' => array(NULL, NULL, NULL, NULL, TRUE),
-    ),
+      'arguments' => [NULL, NULL, NULL, NULL, TRUE],
+    ],
     'add' => '1.0',
     'title' => 'Relationship for On Behalf Forms',
     'description' => 'Relationship type to create on related contributions or memberships',
@@ -32,5 +32,5 @@ return array (
     'add_to_setting_form' => TRUE,
     'form_child_of_parents_parents' => 'is_confirm_enabled',
     'required' => FALSE,
-  ),
-);
+  ],
+];
