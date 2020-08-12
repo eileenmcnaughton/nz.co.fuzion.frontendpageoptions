@@ -96,7 +96,9 @@ function frontendpageoptions_civicrm_postProcess($formName, &$form) {
   if($formName == 'CRM_Contribute_Form_Contribution_Confirm') {
     _frontendpageoptions_processContributionForm($form);
   }
-  if($formName == 'CRM_Event_Form_Registration_Confirm') {
+  // Don't trigger on an off-site form processor here.
+  if($formName == 'CRM_Event_Form_Registration_Confirm' &&
+    $form->_paymentProcessor['billing_mode'] != CRM_Core_Payment::BILLING_MODE_NOTIFY) {
     _frontendpageoptions_processEventForm($form);
   }
 }
@@ -105,7 +107,7 @@ function frontendpageoptions_civicrm_postProcess($formName, &$form) {
  * implements buildForm hook
  *
  * Since we can't rely on events to always call the confirm page we also take a look
- * when building the thank you pae
+ * when building the thank you page. Also for off-site payment processors.
  * @param string $formName
  * @param \CRM_Core_Form $form
  */
